@@ -1,6 +1,7 @@
 #!/bin/bash
 ## downldr
-## version 0.0.1 - initial
+## - multipart file downloader
+## version 0.0.2 - skip if downloaded previously
 ##################################################
 . ${SH2}/sanitize.sh
 . ${SH2}/cecho.sh
@@ -12,6 +13,7 @@ downldr-part-curl() {
   ${src} \
   -r $(( ${i}*${chunk_size} ))-$(( ( (${i}+1)*${chunk_size} ) - 1 )) \
   -k \
+  --max-time 60 \
   -o ${src_base}-part${i} 
 }
 downldr-part() {
@@ -38,9 +40,14 @@ downldr-wait() {
   du -d 0 -h  ${src_base}
 }
 downldr() {
+  test ! -d "${src_title}" || {
+    cecho yellow downloaded previously
+    cecho green skipping
+    return
+  }
   local src_base
   src_base="${src_title}/$( basename ${src} )"
-  cecho yellow $( mkdir -v ${src_title} 2>/dev/null )
+  cecho yellow $( mkdir -v ${src_title} )
   local i
   i=0
   while [ $(( i * ${chunk_size} )) -lt ${src_content_length} ]
