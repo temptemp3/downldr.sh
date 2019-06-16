@@ -1,7 +1,7 @@
 #!/bin/bash
 ## downldr
 ## - multipart file downloader
-## version 0.0.2 - skip if downloaded previously
+## version 0.0.3 - format cecho lines
 ##################################################
 . ${SH2}/sanitize.sh
 . ${SH2}/cecho.sh
@@ -17,22 +17,22 @@ downldr-part-curl() {
   -o ${src_base}-part${i} 
 }
 downldr-part() {
-  cecho yellow i: ${i}
+  cecho yellow "i: ${i}"
   test -f "${src_base}-part${i}" && {
     test $( car $( du -d 0 -b ${src_base}-part${i} ) ) -eq ${chunk_size} && {
-      cecho green already downloaded
-      cecho green skipping ...
+      cecho green "already downloaded"
+      cecho green "skipping ..."
     true
     } || {
-      cecho green downloading part ...
+      cecho green "downloading part ..."
       ${FUNCNAME}-curl
-      cecho green part downloaded
+      cecho green "part downloaded"
     }
   true
   } || {
-    cecho green downloading part ...
+    cecho green "downloading part ..."
     ${FUNCNAME}-curl
-    cecho green part downloaded
+    cecho green "part downloaded"
   }
 }
 downldr-wait() {
@@ -41,13 +41,13 @@ downldr-wait() {
 }
 downldr() {
   test ! -d "${src_title}" || {
-    cecho yellow downloaded previously
-    cecho green skipping
+    cecho yellow "downloaded previously"
+    cecho green "skipping"
     return
   }
   local src_base
   src_base="${src_title}/$( basename ${src} )"
-  cecho yellow $( mkdir -v ${src_title} )
+  cecho yellow "$( mkdir -v ${src_title} )"
   local i
   i=0
   while [ $(( i * ${chunk_size} )) -lt ${src_content_length} ]
@@ -66,7 +66,7 @@ downldr() {
       break
     }
   done
-  cecho green Done
+  cecho green "Done"
 }
 ##################################################
 if [ ${#} -eq 4 ] 
